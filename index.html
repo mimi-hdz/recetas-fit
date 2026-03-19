@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitLife — Recetas & Rutinas</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f2ee;
+    --surface: #ffffff;
+    --ink: #1a1a18;
+    --muted: #7a7a72;
+    --accent: #2d5016;
+    --accent-light: #5a8c2a;
+    --warm: #e8ddd0;
+    --border: #e0dbd4;
+    --tag-bg: #eef4e8;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(245,242,238,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 5vw;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px;
+  }
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem; font-weight: 700;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+  }
+  .logo span { font-style: italic; font-weight: 400; color: var(--ink); }
+  nav ul { list-style: none; display: flex; gap: 2rem; }
+  nav a { text-decoration: none; color: var(--muted); font-weight: 500; font-size: 0.88rem; letter-spacing: 0.3px; transition: color .2s; }
+  nav a:hover { color: var(--accent); }
+  .nav-cta {
+    background: var(--accent); color: #fff;
+    padding: 8px 20px; border-radius: 100px;
+    font-size: 0.82rem; font-weight: 500; letter-spacing: 0.3px;
+    cursor: pointer; border: none; transition: background .2s;
+  }
+  .nav-cta:hover { background: var(--accent-light); }
+
+  /* HERO */
+  .hero {
+    min-height: 88vh;
+    display: grid; grid-template-columns: 1fr 1fr;
+    align-items: center; gap: 4rem;
+    padding: 6rem 5vw 4rem;
+  }
+  .hero-text h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.6rem, 5vw, 4.2rem);
+    line-height: 1.15; font-weight: 700;
+    letter-spacing: -1.5px;
+    margin-bottom: 1.2rem;
+  }
+  .hero-text h1 em { font-style: italic; color: var(--accent); }
+  .hero-text p { color: var(--muted); max-width: 420px; margin-bottom: 2rem; font-size: 1rem; }
+  .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--accent); color: #fff;
+    padding: 14px 28px; border-radius: 100px;
+    font-size: 0.9rem; font-weight: 500; border: none;
+    cursor: pointer; transition: all .25s; text-decoration: none;
+    display: inline-block;
+  }
+  .btn-primary:hover { background: var(--accent-light); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(45,80,22,0.25); }
+  .btn-ghost {
+    background: transparent; color: var(--ink);
+    padding: 14px 28px; border-radius: 100px;
+    font-size: 0.9rem; font-weight: 500;
+    border: 1.5px solid var(--border); cursor: pointer;
+    transition: all .25s; text-decoration: none; display: inline-block;
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+  .hero-visual {
+    position: relative; display: flex; flex-direction: column; gap: 1rem; align-items: flex-end;
+  }
+  .hero-cards {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; width: 100%;
+  }
+  .hero-card {
+    background: var(--surface);
+    border-radius: 20px;
+    padding: 1.4rem;
+    border: 1px solid var(--border);
+    transition: transform .3s;
+    animation: floatUp 0.6s ease both;
+  }
+  .hero-card:nth-child(1) { animation-delay: 0.1s; }
+  .hero-card:nth-child(2) { animation-delay: 0.2s; margin-top: 2rem; }
+  .hero-card:nth-child(3) { animation-delay: 0.3s; }
+  .hero-card:nth-child(4) { animation-delay: 0.4s; margin-top: -1.5rem; }
+  .hero-card:hover { transform: translateY(-6px); }
+  @keyframes floatUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .card-emoji { font-size: 2rem; margin-bottom: 0.5rem; }
+  .card-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 0.2rem; }
+  .card-sub { font-size: 0.78rem; color: var(--muted); }
+
+  /* FILTER TABS */
+  .section { padding: 5rem 5vw; }
+  .section-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem; }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 700; letter-spacing: -0.5px;
+  }
+  .section-title em { font-style: italic; color: var(--accent); }
+  .filter-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .tab {
+    padding: 7px 16px; border-radius: 100px;
+    font-size: 0.82rem; font-weight: 500; cursor: pointer;
+    border: 1.5px solid var(--border); background: transparent;
+    color: var(--muted); transition: all .2s;
+  }
+  .tab.active, .tab:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  /* RECIPE GRID */
+  .recipe-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+  .recipe-card {
+    background: var(--surface); border-radius: 24px;
+    border: 1px solid var(--border); overflow: hidden;
+    transition: all .3s; cursor: pointer;
+  }
+  .recipe-card:hover { transform: translateY(-6px); box-shadow: 0 16px 48px rgba(0,0,0,0.08); }
+  .recipe-img {
+    width: 100%; height: 200px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 4rem; position: relative; overflow: hidden;
+  }
+  .recipe-img .macro-badge {
+    position: absolute; top: 12px; right: 12px;
+    background: rgba(255,255,255,0.9); backdrop-filter: blur(8px);
+    padding: 4px 10px; border-radius: 100px;
+    font-size: 0.72rem; font-weight: 600; color: var(--accent);
+  }
+  .recipe-body { padding: 1.2rem 1.4rem 1.4rem; }
+  .recipe-tags { display: flex; gap: 0.4rem; margin-bottom: 0.7rem; flex-wrap: wrap; }
+  .recipe-tag {
+    background: var(--tag-bg); color: var(--accent);
+    padding: 3px 10px; border-radius: 100px;
+    font-size: 0.72rem; font-weight: 500;
+  }
+  .recipe-name { font-weight: 700; font-size: 1rem; margin-bottom: 0.3rem; }
+  .recipe-desc { font-size: 0.82rem; color: var(--muted); margin-bottom: 1rem; }
+  .recipe-meta { display: flex; gap: 1rem; margin-bottom: 1rem; }
+  .meta-item { display: flex; align-items: center; gap: 0.3rem; font-size: 0.78rem; color: var(--muted); }
+  .meta-icon { font-size: 0.9rem; }
+  .recipe-actions { display: flex; gap: 0.5rem; }
+  .action-btn {
+    flex: 1; padding: 9px; border-radius: 12px;
+    font-size: 0.8rem; font-weight: 500; cursor: pointer;
+    border: 1.5px solid var(--border); background: transparent;
+    transition: all .2s; display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+  }
+  .action-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .share-btn { font-size: 1rem; }
+
+  /* ROUTINES */
+  .routines-bg { background: var(--warm); }
+  .persona-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+  .persona-card {
+    background: var(--surface); border-radius: 24px;
+    padding: 2rem; border: 1px solid var(--border);
+    transition: all .3s; position: relative; overflow: hidden;
+  }
+  .persona-card::before {
+    content: attr(data-emoji);
+    position: absolute; right: -10px; bottom: -10px;
+    font-size: 6rem; opacity: 0.07;
+  }
+  .persona-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.07); }
+  .persona-head { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+  .persona-icon {
+    width: 52px; height: 52px; border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem; flex-shrink: 0;
+  }
+  .persona-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.2rem; }
+  .persona-sub { font-size: 0.8rem; color: var(--muted); }
+  .day-schedule { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1.5rem; }
+  .day-item { display: flex; gap: 0.8rem; align-items: flex-start; }
+  .day-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin-top: 6px; flex-shrink: 0; }
+  .day-content { font-size: 0.83rem; }
+  .day-label { font-weight: 600; color: var(--ink); }
+  .day-detail { color: var(--muted); }
+  .persona-stats { display: flex; gap: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+  .stat { text-align: center; }
+  .stat-num { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--accent); }
+  .stat-label { font-size: 0.72rem; color: var(--muted); }
+
+  /* SOCIAL */
+  .social-section { background: var(--ink); color: #fff; }
+  .social-section .section-title { color: #fff; }
+  .social-section .section-title em { color: var(--accent-light); }
+  .social-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 3rem; align-items: start; }
+  .social-text p { color: rgba(255,255,255,0.6); margin-bottom: 2rem; font-size: 0.95rem; }
+  .social-links { display: flex; flex-direction: column; gap: 0.8rem; }
+  .social-link {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 1rem 1.2rem; border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #fff; text-decoration: none;
+    transition: all .25s; cursor: pointer;
+    background: rgba(255,255,255,0.04);
+  }
+  .social-link:hover { background: rgba(255,255,255,0.1); transform: translateX(4px); }
+  .social-icon { font-size: 1.4rem; width: 36px; text-align: center; }
+  .social-info { flex: 1; }
+  .social-name { font-weight: 600; font-size: 0.88rem; }
+  .social-handle { font-size: 0.78rem; color: rgba(255,255,255,0.5); }
+  .social-followers { font-size: 0.78rem; color: var(--accent-light); font-weight: 600; }
+  .share-widget { background: rgba(255,255,255,0.05); border-radius: 24px; padding: 2rem; border: 1px solid rgba(255,255,255,0.1); }
+  .share-widget h3 { font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 0.5rem; }
+  .share-widget p { color: rgba(255,255,255,0.5); font-size: 0.85rem; margin-bottom: 1.5rem; }
+  .share-preview {
+    background: rgba(255,255,255,0.08); border-radius: 16px;
+    padding: 1.2rem; margin-bottom: 1.2rem;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .share-preview-title { font-weight: 600; margin-bottom: 0.3rem; font-size: 0.9rem; }
+  .share-preview-sub { font-size: 0.8rem; color: rgba(255,255,255,0.5); }
+  .share-buttons { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+  .share-to-btn {
+    padding: 10px 18px; border-radius: 12px;
+    font-size: 0.82rem; font-weight: 500; cursor: pointer;
+    border: none; transition: all .25s; display: flex; align-items: center; gap: 0.5rem;
+  }
+  .share-ig { background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366); color: #fff; }
+  .share-tw { background: #000; color: #fff; }
+  .share-wa { background: #25D366; color: #fff; }
+  .share-fb { background: #1877F2; color: #fff; }
+  .share-to-btn:hover { opacity: 0.85; transform: translateY(-2px); }
+
+  /* TOAST */
+  #toast {
+    position: fixed; bottom: 2rem; right: 2rem; z-index: 999;
+    background: var(--ink); color: #fff;
+    padding: 12px 20px; border-radius: 12px;
+    font-size: 0.85rem; font-weight: 500;
+    transform: translateY(80px); opacity: 0;
+    transition: all .3s;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  }
+  #toast.show { transform: translateY(0); opacity: 1; }
+
+  /* FOOTER */
+  footer {
+    padding: 3rem 5vw;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
+  }
+  footer .logo { font-size: 1.1rem; }
+  footer p { font-size: 0.8rem; color: var(--muted); }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.5); display: none;
+    align-items: center; justify-content: center; padding: 1rem;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface); border-radius: 28px;
+    max-width: 520px; width: 100%; padding: 2.5rem;
+    position: relative; max-height: 90vh; overflow-y: auto;
+    animation: modalIn .3s ease;
+  }
+  @keyframes modalIn { from { opacity:0; transform: scale(.95) translateY(20px); } to { opacity:1; transform: none; } }
+  .modal-close {
+    position: absolute; top: 1.2rem; right: 1.2rem;
+    background: var(--warm); border: none; border-radius: 50%;
+    width: 36px; height: 36px; cursor: pointer;
+    font-size: 1rem; display: flex; align-items: center; justify-content: center;
+  }
+  .modal-emoji { font-size: 3rem; margin-bottom: 1rem; }
+  .modal-title { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .modal-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1rem; }
+  .modal-desc { color: var(--muted); margin-bottom: 1.5rem; }
+  .ingredients-title, .steps-title { font-weight: 700; margin-bottom: 0.8rem; }
+  .ingredient-list, .steps-list { list-style: none; margin-bottom: 1.5rem; }
+  .ingredient-list li { padding: 0.4rem 0; border-bottom: 1px solid var(--border); font-size: 0.88rem; display: flex; justify-content: space-between; }
+  .steps-list li { padding: 0.5rem 0 0.5rem 2.2rem; position: relative; font-size: 0.88rem; color: var(--muted); border-bottom: 1px solid var(--border); }
+  .steps-list li::before { content: attr(data-step); position: absolute; left: 0; background: var(--accent); color: #fff; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; top: 6px; }
+  .macros-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 0.8rem; margin-top: 1.5rem; }
+  .macro-box { background: var(--tag-bg); border-radius: 14px; padding: 0.8rem; text-align: center; }
+  .macro-val { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.2rem; color: var(--accent); }
+  .macro-lbl { font-size: 0.7rem; color: var(--muted); font-weight: 500; }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; min-height: auto; padding: 4rem 5vw; }
+    .hero-visual { align-items: center; }
+    .social-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 600px) {
+    nav ul { display: none; }
+    .hero-cards { grid-template-columns: 1fr 1fr; }
+    .hero-card:nth-child(2), .hero-card:nth-child(4) { margin: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Fit<span>Life</span></div>
+  <ul>
+    <li><a href="#recetas">Recetas</a></li>
+    <li><a href="#rutinas">Rutinas</a></li>
+    <li><a href="#comunidad">Comunidad</a></li>
+  </ul>
+  <button class="nav-cta" onclick="showToast('¡Bienvenid@ a FitLife! 🌿')">Empezar gratis</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-text">
+    <h1>Come bien,<br><em>vive mejor</em><br>cada día</h1>
+    <p>Recetas fitness diseñadas para tu estilo de vida. Rutinas personalizadas, ingredientes simples y comunidad que te impulsa.</p>
+    <div class="hero-btns">
+      <a href="#recetas" class="btn-primary">Explorar recetas</a>
+      <a href="#rutinas" class="btn-ghost">Ver rutinas</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="hero-cards">
+      <div class="hero-card">
+        <div class="card-emoji">🥗</div>
+        <div class="card-title">Bowl de quinoa</div>
+        <div class="card-sub">320 kcal · 25g proteína</div>
+      </div>
+      <div class="hero-card">
+        <div class="card-emoji">🏃</div>
+        <div class="card-title">Cardio HIIT</div>
+        <div class="card-sub">30 min · Nivel medio</div>
+      </div>
+      <div class="hero-card">
+        <div class="card-emoji">🥑</div>
+        <div class="card-title">Toast de aguacate</div>
+        <div class="card-sub">280 kcal · 12g grasa sana</div>
+      </div>
+      <div class="hero-card">
+        <div class="card-emoji">💪</div>
+        <div class="card-title">Fuerza + Movilidad</div>
+        <div class="card-sub">45 min · Todos los días</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RECETAS -->
+<section class="section" id="recetas">
+  <div class="section-header">
+    <h2 class="section-title">Recetas <em>fitness</em></h2>
+    <div class="filter-tabs">
+      <button class="tab active" onclick="filterRecipes('todos', this)">Todos</button>
+      <button class="tab" onclick="filterRecipes('desayuno', this)">Desayuno</button>
+      <button class="tab" onclick="filterRecipes('almuerzo', this)">Almuerzo</button>
+      <button class="tab" onclick="filterRecipes('cena', this)">Cena</button>
+      <button class="tab" onclick="filterRecipes('snack', this)">Snack</button>
+      <button class="tab" onclick="filterRecipes('vegano', this)">Vegano</button>
+    </div>
+  </div>
+  <div class="recipe-grid" id="recipeGrid"></div>
+</section>
+
+<!-- RUTINAS -->
+<section class="section routines-bg" id="rutinas">
+  <div class="section-header">
+    <h2 class="section-title">Rutinas para <em>cada persona</em></h2>
+  </div>
+  <div class="persona-cards" id="personaCards"></div>
+</section>
+
+<!-- SOCIAL -->
+<section class="section social-section" id="comunidad">
+  <div class="section-header">
+    <h2 class="section-title">Únete a la <em>comunidad</em></h2>
+  </div>
+  <div class="social-grid">
+    <div class="social-text">
+      <p>Más de 50,000 personas transformando su vida con FitLife. Comparte tus recetas, muestra tu progreso y encuentra inspiración.</p>
+      <div class="social-links">
+        <div class="social-link" onclick="openSocial('instagram')">
+          <span class="social-icon">📸</span>
+          <div class="social-info">
+            <div class="social-name">Instagram</div>
+            <div class="social-handle">@fitlife.oficial</div>
+          </div>
+          <div class="social-followers">42K</div>
+        </div>
+        <div class="social-link" onclick="openSocial('tiktok')">
+          <span class="social-icon">🎵</span>
+          <div class="social-info">
+            <div class="social-name">TikTok</div>
+            <div class="social-handle">@fitlife_mx</div>
+          </div>
+          <div class="social-followers">28K</div>
+        </div>
+        <div class="social-link" onclick="openSocial('youtube')">
+          <span class="social-icon">▶️</span>
+          <div class="social-info">
+            <div class="social-name">YouTube</div>
+            <div class="social-handle">FitLife Recetas</div>
+          </div>
+          <div class="social-followers">15K</div>
+        </div>
+        <div class="social-link" onclick="openSocial('pinterest')">
+          <span class="social-icon">📌</span>
+          <div class="social-info">
+            <div class="social-name">Pinterest</div>
+            <div class="social-handle">fitlife.recetas</div>
+          </div>
+          <div class="social-followers">8K</div>
+        </div>
+      </div>
+    </div>
+    <div class="share-widget">
+      <h3>Comparte tu progreso 🏆</h3>
+      <p>¿Hiciste una de nuestras recetas? ¡Cuéntaselo al mundo!</p>
+      <div class="share-preview" id="sharePreview">
+        <div class="share-preview-title" id="previewTitle">Bowl Proteico de Quinoa 🥗</div>
+        <div class="share-preview-sub">¡Acabo de preparar esta deliciosa receta de FitLife! 💪 #FitLife #Fitness #Saludable</div>
+      </div>
+      <div class="share-buttons">
+        <button class="share-to-btn share-ig" onclick="shareToSocial('instagram')">📸 Instagram</button>
+        <button class="share-to-btn share-tw" onclick="shareToSocial('twitter')">𝕏 Twitter</button>
+        <button class="share-to-btn share-wa" onclick="shareToSocial('whatsapp')">💬 WhatsApp</button>
+        <button class="share-to-btn share-fb" onclick="shareToSocial('facebook')">👍 Facebook</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="logo">Fit<span>Life</span></div>
+  <p>© 2025 FitLife · Hecho con 💚 para tu bienestar</p>
+  <p style="font-size:0.78rem;color:var(--muted)">Recetas · Rutinas · Comunidad</p>
+</footer>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<script>
+const recipes = [
+  {
+    id:1, emoji:'🥗', name:'Bowl Proteico de Quinoa', cat:['almuerzo','vegano'],
+    color:'#e8f5e9', desc:'Quinoa esponjosa con garbanzos asados, espinaca fresca y tahini de limón.',
+    time:'25 min', kcal:320, protein:'18g',
+    tags:['Alto en proteína','Vegano','Sin gluten'],
+    ingredients:[
+      ['Quinoa cocida','1 taza'],['Garbanzos','½ lata'],['Espinaca','2 puños'],
+      ['Cherry','8 pzas'],['Aguacate','½ pza'],['Tahini','2 cdas'],['Limón','1 pza'],['Aceite oliva','1 cda']
+    ],
+    steps:['Cocina la quinoa según indicaciones del paquete.','Asa los garbanzos con sal y paprika 20 min a 200°C.',
+           'Mezcla tahini, jugo de limón, aceite y 2 cdas de agua.','Arma el bowl con todos los ingredientes y vierte el aderezo.'],
+    macros:{kcal:320,prot:18,carbs:38,grasas:12}
+  },
+  {
+    id:2, emoji:'🥞', name:'Pancakes de Avena y Plátano', cat:['desayuno'],
+    color:'#fff8e1', desc:'Esponjosos y dulces de forma natural, sin harinas refinadas ni azúcar añadida.',
+    time:'15 min', kcal:280, protein:'14g',
+    tags:['Alto en fibra','Sin azúcar añadida','Vegetariano'],
+    ingredients:[
+      ['Avena en hojuelas','1 taza'],['Plátano maduro','1 pza'],['Huevos','2 pzas'],
+      ['Leche vegetal','¼ taza'],['Polvo para hornear','1 cta'],['Canela','½ cta'],['Extracto de vainilla','1 cta']
+    ],
+    steps:['Licúa todos los ingredientes hasta obtener una mezcla homogénea.',
+           'Calienta una sartén antiadherente a fuego medio.',
+           'Vierte ¼ taza por pancake y cocina 2-3 min cada lado.',
+           'Sirve con frutas frescas y miel de agave.'],
+    macros:{kcal:280,prot:14,carbs:42,grasas:6}
+  },
+  {
+    id:3, emoji:'🍗', name:'Pollo al Limón con Espárragos', cat:['cena','almuerzo'],
+    color:'#f3e5f5', desc:'Pechuga jugosa marinada en hierbas frescas con espárragos salteados al ajo.',
+    time:'30 min', kcal:380, protein:'42g',
+    tags:['Alto en proteína','Low-carb','Sin lácteos'],
+    ingredients:[
+      ['Pechuga de pollo','200g'],['Espárragos','200g'],['Ajo','3 dientes'],
+      ['Limón','2 pzas'],['Romero fresco','2 ramas'],['Aceite oliva','1.5 cdas'],['Sal y pimienta','Al gusto']
+    ],
+    steps:['Marina el pollo con limón, ajo, romero, sal y pimienta 15 min.',
+           'Sella el pollo 5 min por lado a fuego medio-alto.',
+           'En la misma sartén, saltea los espárragos con ajo 4-5 min.',
+           'Descansa el pollo 3 min antes de servir.'],
+    macros:{kcal:380,prot:42,carbs:8,grasas:18}
+  },
+  {
+    id:4, emoji:'🫐', name:'Smoothie Bowl de Arándanos', cat:['desayuno','snack','vegano'],
+    color:'#e3f2fd', desc:'Base cremosa de arándanos congelados con granola crocante y frutas frescas.',
+    time:'10 min', kcal:210, protein:'8g',
+    tags:['Vegano','Antioxidante','Sin gluten'],
+    ingredients:[
+      ['Arándanos congelados','1 taza'],['Plátano congelado','½ pza'],['Leche de almendra','¼ taza'],
+      ['Granola','3 cdas'],['Fresas','5 pzas'],['Miel de abeja','1 cda'],['Semillas de chía','1 cta']
+    ],
+    steps:['Licúa arándanos, plátano y leche de almendra hasta cremoso.',
+           'Vierte en bowl y decora con granola, fresas y chía.',
+           'Añade miel al gusto y consume inmediatamente.'],
+    macros:{kcal:210,prot:8,carbs:40,grasas:4}
+  },
+  {
+    id:5, emoji:'🥚', name:'Huevos al Pesto con Tostada de Centeno', cat:['desayuno'],
+    color:'#e8f5e9', desc:'Huevos revueltos suaves con pesto de albahaca sobre pan de centeno tostado.',
+    time:'10 min', kcal:350, protein:'22g',
+    tags:['Alto en proteína','Vegetariano','Rápido'],
+    ingredients:[
+      ['Huevos','3 pzas'],['Pan de centeno','2 rebanadas'],['Pesto de albahaca','2 cdas'],
+      ['Espinaca baby','1 puño'],['Tomates cherry','6 pzas'],['Aceite oliva','½ cda']
+    ],
+    steps:['Tuesta el pan a tu gusto.',
+           'Bate los huevos con sal y pimienta.',
+           'Cocina a fuego bajo revolviendo suavemente 2-3 min.',
+           'Unta pesto en la tostada, añade espinaca y huevos.'],
+    macros:{kcal:350,prot:22,carbs:32,grasas:14}
+  },
+  {
+    id:6, emoji:'🥣', name:'Overnight Oats de Chía y Mango', cat:['desayuno','vegano'],
+    color:'#fff3e0', desc:'Avena preparada la noche anterior con chía, leche de coco y mango tropical.',
+    time:'5 min + reposo', kcal:295, protein:'10g',
+    tags:['Vegano','Alto en fibra','Preparación rápida'],
+    ingredients:[
+      ['Avena en hojuelas','½ taza'],['Leche de coco','¾ taza'],['Semillas de chía','2 cdas'],
+      ['Mango','½ pza'],['Miel de agave','1 cda'],['Extracto de vainilla','½ cta'],['Granola','2 cdas']
+    ],
+    steps:['Mezcla avena, chía, leche de coco, vainilla y miel.',
+           'Refrigera en frasco tapado toda la noche (mín. 6h).',
+           'Por la mañana revuelve y añade mango y granola.'],
+    macros:{kcal:295,prot:10,carbs:48,grasas:8}
+  },
+  {
+    id:7, emoji:'🌮', name:'Tacos de Atún con Guacamole Fit', cat:['cena','almuerzo'],
+    color:'#fce4ec', desc:'Tortillas de maíz con atún al limón, guacamole ligero y repollo crujiente.',
+    time:'15 min', kcal:360, protein:'30g',
+    tags:['Alto en omega-3','Sin gluten','Bajo en grasa'],
+    ingredients:[
+      ['Atún en agua','2 latas'],['Tortillas de maíz','4 pzas'],['Aguacate','1 pza'],
+      ['Repollo morado','1 taza'],['Cilantro','¼ taza'],['Limón','2 pzas'],['Jalapeño','1 pza'],['Sal','Al gusto']
+    ],
+    steps:['Escurre el atún y sazona con limón, sal y cilantro.',
+           'Aplasta el aguacate con limón, sal y jalapeño.',
+           'Calienta las tortillas en comal.',
+           'Arma los tacos con atún, guacamole y repollo.'],
+    macros:{kcal:360,prot:30,carbs:34,grasas:10}
+  },
+  {
+    id:8, emoji:'🍫', name:'Bolas de Energía Cacao y Almendra', cat:['snack','vegano'],
+    color:'#efebe9', desc:'Bocadillo saludable de dátiles, almendras y cacao. Sin horno, listo en 10 min.',
+    time:'10 min', kcal:95, protein:'3g',
+    tags:['Sin horno','Vegano','Pre-entreno'],
+    ingredients:[
+      ['Dátiles Medjool','10 pzas'],['Almendras','½ taza'],['Cacao en polvo','2 cdas'],
+      ['Mantequilla de almendra','1 cda'],['Sal de mar','1 pizca'],['Coco rallado','3 cdas']
+    ],
+    steps:['Remoja los dátiles 10 min en agua caliente y escurre.',
+           'Procesa almendras hasta obtener harina gruesa.',
+           'Agrega dátiles, cacao, mantequilla y sal. Procesa.',
+           'Forma bolitas de 3cm y rueda en coco rallado. Refrigera 30 min.'],
+    macros:{kcal:95,prot:3,carbs:14,grasas:4}
+  }
+];
+
+const personas = [
+  {
+    emoji:'🏙️', title:'El/La Profesional Ocupad@', sub:'Para quienes tienen poco tiempo',
+    color:'#f0f7ee', iconBg:'#e8f5e9',
+    schedule:[
+      {day:'Lunes / Miércoles / Viernes', detail:'20 min HIIT antes del trabajo • Bowl proteico de almuerzo'},
+      {day:'Martes / Jueves', detail:'Yoga matutino 15 min • Overnight oats preparados la noche anterior'},
+      {day:'Fin de semana', detail:'Entrenamiento 45 min • Meal prep para la semana completa'}
+    ],
+    stats:[{val:'3x', lbl:'Entrenamientos'},{val:'<30m', lbl:'Por sesión'},{val:'5min', lbl:'Prep desayuno'}]
+  },
+  {
+    emoji:'🌿', title:'El/La Vegano/a Activ@', sub:'Plant-based y lleno/a de energía',
+    color:'#f9fbe7', iconBg:'#f0f4c3',
+    schedule:[
+      {day:'Todos los días', detail:'Smoothie bowl de 10 min • Meditación 5 min'},
+      {day:'Entrenamiento', detail:'Fuerza con peso corporal • Yoga 30 min en alternancia'},
+      {day:'Nutrición', detail:'4-5 comidas plant-based • Snacks de bolas de cacao'}
+    ],
+    stats:[{val:'5x', lbl:'Sesiones/semana'},{val:'100%', lbl:'Plant-based'},{val:'2L', lbl:'Agua/día'}]
+  },
+  {
+    emoji:'💪', title:'El/La Atleta en Progreso', sub:'Ganancia muscular y rendimiento',
+    color:'#fff8e1', iconBg:'#fff9c4',
+    schedule:[
+      {day:'Lunes / Jueves', detail:'Push: Pecho, hombros, tríceps • Pollo con quinoa post-entreno'},
+      {day:'Martes / Viernes', detail:'Pull: Espalda y bíceps • Batido proteico + plátano'},
+      {day:'Miércoles / Sábado', detail:'Legs: Piernas y glúteos • Tacos de atún para la cena'},
+      {day:'Domingo', detail:'Descanso activo: Caminata o natación suave'}
+    ],
+    stats:[{val:'5x', lbl:'Días activos'},{val:'+42g', lbl:'Proteína/comida'},{val:'8h', lbl:'Sueño objetivo'}]
+  },
+  {
+    emoji:'🧘', title:'El/La Bienestarista', sub:'Equilibrio cuerpo y mente',
+    color:'#fce4ec', iconBg:'#f8bbd0',
+    schedule:[
+      {day:'Mañana', detail:'10 min meditación • Desayuno consciente sin pantallas'},
+      {day:'Mediodía', detail:'Caminata 20 min • Almuerzo equilibrado con bowl de quinoa'},
+      {day:'Tarde', detail:'Pilates o yoga 30-40 min • Snack nutritivo'},
+      {day:'Noche', detail:'Stretching 10 min • Infusión y diario de gratitud'}
+    ],
+    stats:[{val:'4x', lbl:'Yoga/semana'},{val:'20k', lbl:'Pasos/día'},{val:'0', lbl:'Estrés 😄'}]
+  },
+  {
+    emoji:'👶', title:'Mamá / Papá Fit', sub:'Activo/a con familia y poco tiempo',
+    color:'#e3f2fd', iconBg:'#bbdefb',
+    schedule:[
+      {day:'Mañana', detail:'Pancakes de avena para tod@s • Juegos activos con hij@s'},
+      {day:'Mientras duermen', detail:'HIIT en casa 20 min • Preparación de snacks saludables'},
+      {day:'Fin de semana', detail:'Actividad familiar: bicicleta o natación • Cocina fit en familia'}
+    ],
+    stats:[{val:'2x', lbl:'HIIT/semana'},{val:'20m', lbl:'Máx. por sesión'},{val:'∞', lbl:'Energía familiar'}]
+  },
+  {
+    emoji:'🎓', title:'El/La Universitari@', sub:'Fit con presupuesto ajustado',
+    color:'#f3e5f5', iconBg:'#e1bee7',
+    schedule:[
+      {day:'Desayuno (económico)', detail:'Overnight oats $30 · Huevos con pesto en 10 min'},
+      {day:'Entrenamiento', detail:'Gym universitario o ejercicios en dormitorio'},
+      {day:'Almuerzo / Cena', detail:'Batch cooking dominical • Tacos de atún (proteína económica)'},
+      {day:'Snacks', detail:'Bolas de energía caseras • Frutas de temporada'}
+    ],
+    stats:[{val:'$50', lbl:'Snack/día'},{val:'3x', lbl:'Gym/semana'},{val:'6h', lbl:'Estudio+fit'}]
+  }
+];
+
+function renderRecipes(filter = 'todos') {
+  const grid = document.getElementById('recipeGrid');
+  const filtered = filter === 'todos' ? recipes : recipes.filter(r => r.cat.includes(filter));
+  grid.innerHTML = filtered.map(r => `
+    <div class="recipe-card" onclick="openRecipe(${r.id})">
+      <div class="recipe-img" style="background:${r.color}">${r.emoji}
+        <span class="macro-badge">${r.protein} prot</span>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-tags">${r.tags.map(t=>`<span class="recipe-tag">${t}</span>`).join('')}</div>
+        <div class="recipe-name">${r.name}</div>
+        <div class="recipe-desc">${r.desc}</div>
+        <div class="recipe-meta">
+          <span class="meta-item"><span class="meta-icon">⏱</span>${r.time}</span>
+          <span class="meta-item"><span class="meta-icon">🔥</span>${r.kcal} kcal</span>
+        </div>
+        <div class="recipe-actions">
+          <button class="action-btn" onclick="event.stopPropagation();shareRecipe(${r.id})">
+            <span class="share-btn">📤</span> Compartir
+          </button>
+          <button class="action-btn" onclick="event.stopPropagation();saveRecipe(${r.id})">❤️ Guardar</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderPersonas() {
+  document.getElementById('personaCards').innerHTML = personas.map((p,i) => `
+    <div class="persona-card" data-emoji="${p.emoji}" style="background:${p.color}">
+      <div class="persona-head">
+        <div class="persona-icon" style="background:${p.iconBg}">${p.emoji}</div>
+        <div>
+          <div class="persona-title">${p.title}</div>
+          <div class="persona-sub">${p.sub}</div>
+        </div>
+      </div>
+      <div class="day-schedule">
+        ${p.schedule.map(s=>`
+          <div class="day-item">
+            <div class="day-dot"></div>
+            <div class="day-content">
+              <span class="day-label">${s.day}: </span>
+              <span class="day-detail">${s.detail}</span>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="persona-stats">
+        ${p.stats.map(s=>`
+          <div class="stat">
+            <div class="stat-num">${s.val}</div>
+            <div class="stat-label">${s.lbl}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterRecipes(cat, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderRecipes(cat);
+}
+
+function openRecipe(id) {
+  const r = recipes.find(x => x.id === id);
+  document.getElementById('modalContent').innerHTML = `
+    <div class="modal-emoji">${r.emoji}</div>
+    <div class="modal-title">${r.name}</div>
+    <div class="modal-tags">${r.tags.map(t=>`<span class="recipe-tag">${t}</span>`).join('')}</div>
+    <p class="modal-desc">${r.desc} · ⏱ ${r.time}</p>
+    <div class="ingredients-title">Ingredientes</div>
+    <ul class="ingredient-list">
+      ${r.ingredients.map(i=>`<li><span>${i[0]}</span><span style="color:var(--muted)">${i[1]}</span></li>`).join('')}
+    </ul>
+    <div class="steps-title">Preparación</div>
+    <ul class="steps-list">
+      ${r.steps.map((s,i)=>`<li data-step="${i+1}">${s}</li>`).join('')}
+    </ul>
+    <div class="macros-grid">
+      <div class="macro-box"><div class="macro-val">${r.macros.kcal}</div><div class="macro-lbl">Calorías</div></div>
+      <div class="macro-box"><div class="macro-val">${r.macros.prot}g</div><div class="macro-lbl">Proteína</div></div>
+      <div class="macro-box"><div class="macro-val">${r.macros.carbs}g</div><div class="macro-lbl">Carbos</div></div>
+      <div class="macro-box"><div class="macro-val">${r.macros.grasas}g</div><div class="macro-lbl">Grasas</div></div>
+    </div>
+  `;
+  document.getElementById('previewTitle').textContent = `${r.emoji} ${r.name}`;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModalDirect();
+}
+function closeModalDirect() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function shareRecipe(id) {
+  const r = recipes.find(x => x.id === id);
+  const text = encodeURIComponent(`¡Acabo de preparar ${r.name}! ${r.emoji} Solo ${r.kcal} kcal y ${r.protein} de proteína. #FitLife #Fitness #Saludable`);
+  window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
+}
+
+function saveRecipe(id) {
+  const r = recipes.find(x => x.id === id);
+  showToast(`💚 ${r.name} guardada en tus favoritos`);
+}
+
+function openSocial(platform) {
+  const urls = {
+    instagram: 'https://instagram.com',
+    tiktok: 'https://tiktok.com',
+    youtube: 'https://youtube.com',
+    pinterest: 'https://pinterest.com'
+  };
+  window.open(urls[platform], '_blank');
+  showToast(`Abriendo ${platform.charAt(0).toUpperCase()+platform.slice(1)}... 🚀`);
+}
+
+function shareToSocial(platform) {
+  const title = document.getElementById('previewTitle').textContent;
+  const text = encodeURIComponent(`${title}\n¡Acabo de preparar esta deliciosa receta de FitLife! 💪 #FitLife #Fitness #Saludable`);
+  const urls = {
+    instagram: `https://instagram.com`,
+    twitter: `https://twitter.com/intent/tweet?text=${text}`,
+    whatsapp: `https://wa.me/?text=${text}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=https://fitlife.mx&quote=${text}`
+  };
+  if (platform === 'instagram') {
+    navigator.clipboard.writeText(decodeURIComponent(text)).catch(()=>{});
+    showToast('📸 Texto copiado para Instagram! ✓');
+  } else {
+    window.open(urls[platform], '_blank');
+    showToast(`Compartiendo en ${platform} 🚀`);
+  }
+}
+
+// Init
+renderRecipes();
+renderPersonas();
+</script>
+</body>
+</html>
